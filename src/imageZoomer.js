@@ -1,20 +1,24 @@
+/**
+ * @fileOverview 图片放大查看imageZoomer.js
+ * @author Zhao Jianfei <icefox0801@hotmail.com>
+ * @version 0.0.1
+ * @description 图片区域放大查看控件
+ * @copyright © 2014 Jianfei Zhao
+ **/
 (function (window, undefined) {
 
     if(typeof $ !== 'function') return false;
 
-    var snippets = {
-        zoomer: '',
-        viewer: ''
-    };
-
     var viewer = {},
-        instances = [],
-        options = {},
-        defaults = {
-            viewerWidth: 600,
-            viewerHeight: 300,
-            viewerLayout: 'right', // 'top'|'right'|'bottom'|'left'|'auto'
-        };
+        _instances = [];
+
+    var defaults = {
+        viewerIdPrefix: 'imageViewer',
+        viewerWidth: 600,
+        viewerHeight: 300,
+        viewerLayout: 'auto', // 'top'|'right'|'bottom'|'left'|'auto'
+        zoomerIdPrefix: 'imageZoomer'
+    };
 
     var caretStyle = {
         common: {
@@ -72,14 +76,60 @@
         return getMaxProperValue(properValueArray, index+1);
     };
 
-    window.gg = getMaxProperValue;
-
-    viewer.instances = instances;
-
-    viewer.initZoomer = function (elem, options) {
-        return new Zoomer(elem, options);
+    viewer.getInstances = function () {
+        return _instances;
     };
 
+    viewer.initZoomer = function (elem, options) {
+
+        var zoomer,
+            instances;
+
+        if(typeof options === 'string') {
+            options = {
+                viewerLayout: options
+            };
+        } else if (typeof options !== 'object'){
+            options = {};
+        }
+
+        instances = viewer.getInstances();
+        options._zoomerIndex = instances.length;
+
+        zoomer = new Zoomer(elem, options);
+
+        instances.push(zoomer);
+
+        return zoomer;
+    };
+
+    viewer.destroyZoomer = function (instance) {
+
+        var instances = [],
+            zoomer;
+
+        if(!(instance instanceof Zoomer)) return false;
+
+        instances = viewer.getInstances();
+
+        for(var idx = 0, len = instances.length; idx < len; idx++) {
+
+            if(instances[idx] === instance) {
+                instance.destroy();
+                instances.splice(idx, 1);
+            }
+
+        }
+
+        return instance;
+
+    };
+    /**
+     * @name Zoomer
+     * @class Zoomer类定义，封装了zoomer、viewer元素的渲染等方法
+     * @param {object|string} elem    绑定控件的DOM元素（或jQuery选择器）
+     * @param {object} options 控件配置参数
+     */
     var Zoomer = function (elem, options) {
 
         this.$elem = $(elem);
@@ -106,7 +156,7 @@
 
             _t.$zoomer = _t.createZoomer();
             _t.$viewer = _t.createViewer();
-            _t.$viewerImage = _t.$viewer.find('#viewer');
+            _t.$viewerImage = _t.$viewer.find('.viewer-image');
 
             _t.$elem.on('mouseover', function (e) {
                 var $t = $(this),
@@ -173,10 +223,29 @@
                 };
             });
         },
+        /**
+         * @description Zoomer析构方法
+         * @memberOf Zoomer
+         * @instance
+         */
+        destroy: function () {
+            var _t = this;
+            // 解绑事件
+            _t.$elem.off('mouseover');
+            // 从DOM中移除元素
+            _t.$zoomer.remove();
+            _t.$viewer.remove();
+            // 删除属性（引用）
+            for(var attr in _t) delete(_t[attr]);
+            // 删除原型（引用）
+            _t.__proto__ = null;
+
+        },
         createZoomer: function () {
             var _t = this,
+                zoomerId = _t.options.zoomerIdPrefix + _t.options._zoomerIndex,
                 originOffset = {},
-                $zoomer = $('<div id="zoomer"></div>');
+                $zoomer = $('<div id="' + zoomerId + '"></div>');
 
             $zoomer.css({
                 'display': 'none',
@@ -220,7 +289,8 @@
 
         createViewer: function () {
             var _t = this,
-                $viewer = $('<div id="viewerContainer"><div id="viewer"></div><span id="caret"></span></div>');
+                viewerId = _t.options.viewerIdPrefix + _t.options._zoomerIndex,
+                $viewer = $('<div id="' + viewerId + '"><div class="viewer-image"></div><span id="caret"></span></div>');
 
             $viewer.css({
                 'display': 'none',
@@ -229,7 +299,7 @@
                 'position': 'absolute',
             });
 
-            $viewer.find('#viewer').css({
+            $viewer.find('.viewer-image').css({
                 'width': _t.options.viewerWidth,
                 'height': _t.options.viewerHeight
             });
@@ -375,6 +445,7 @@
             });
         }
     };
+
 
     window.viewer = viewer;
 })(window, undefined);
