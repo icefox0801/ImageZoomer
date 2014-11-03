@@ -1,0 +1,30 @@
+{
+    "tags": {
+        "allowUnknownTags": true
+    },
+    "source": {
+        "includePattern": ".+\\.js(doc)?$",
+        "excludePattern": "(^|\\/|\\\\)_"
+    },
+    "plugins": [ "plugins/markdown" ],
+    "templates" : {
+		"cleverLinks"     : false,
+		"monospaceLinks"  : false,
+		"default"         : {
+			"outputSourceFiles" : true
+		},
+		"systemName"      : "DocStrap",
+		"footer"          : "",
+		"copyright"       : "DocStrap Copyright © 2012-2013 The contributors to the JSDoc3 and DocStrap projects.",
+		"navType"         : "vertical",
+		"theme"           : "united",
+		"linenums"        : true,
+		"collapseSymbols" : false,
+		"inverseNav"      : true
+	},
+	"opts": {
+		"template": "./node_modules/gulp-jsdoc/node_modules/ink-docstrap/template",
+		"encoding": "utf8",
+		"destination": "./docs/"
+	}
+}

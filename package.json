@@ -1,0 +1,28 @@
+{
+  "name": "ImageZoomer",
+  "version": "0.0.1",
+  "description": "图片放大查看控件",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docs": "jsdoc README.md src/ImageZoomer.js -c conf.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/icefox0801/ImageZoomer.git"
+  },
+  "keywords": [
+    "image",
+    "zoom",
+    "view"
+  ],
+  "author": "icefox0801",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/icefox0801/ImageZoomer/issues"
+  },
+  "homepage": "https://github.com/icefox0801/ImageZoomer",
+  "devDependencies": {
+    "gulp-jsdoc": "^0.1.4"
+  }
+}

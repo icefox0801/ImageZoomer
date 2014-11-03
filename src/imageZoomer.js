@@ -6,12 +6,23 @@
  * @copyright © 2014 Jianfei Zhao
  **/
 (function (window, undefined) {
-
+    /**
+     * @description imageZoomer.js图片放大查看控件
+     * @module imageZoomer
+     */
     if(typeof $ !== 'function') return false;
 
     var viewer = {},
         _instances = [];
-
+    /**
+     * @name module:imageZoomer~defaults
+     * @type {object}
+     * @property {string} viewerIdPrefix viewer元素id前缀
+     * @property {number} viewerWidth viewer元素宽度
+     * @property {number} viewerHeight viewer元素高度
+     * @property {string} viewerLayout viewer布局方式，auto|top|right|bottom|left
+     * @property {string} zoomerIdPrefix zoomer元素id前缀
+     */
     var defaults = {
         viewerIdPrefix: 'imageViewer',
         viewerWidth: 600,
@@ -23,7 +34,7 @@
     var caretStyle = {
         common: {
             'position': 'absolute',
-            'background-image': 'url(./src/caret.gif)',
+            'background-image': 'url(./src/image/caret.gif)',
             'display': 'block'
         },
         bottom: {
@@ -127,29 +138,65 @@
     /**
      * @name Zoomer
      * @class Zoomer类定义，封装了zoomer、viewer元素的渲染等方法
+     * @constructor
      * @param {object|string} elem    绑定控件的DOM元素（或jQuery选择器）
-     * @param {object} options 控件配置参数
+     * @param {object} options 控件配置参数，属性请参考{@linkcode module:imageZooer~defaults}
      */
     var Zoomer = function (elem, options) {
-
+        /**
+         * @alias Zoomer#$elem
+         * @description 绑定控件的jQuery对象
+         * @type {object}
+         */
         this.$elem = $(elem);
-
+        /**
+         * @alias Zoomer#$viewer
+         * @description 图片查看区域的jQuery对象
+         * @type {object}
+         */
         this.$viewer = null;
-
+        /**
+         * @alias Zoomer#$viewerImage
+         * @description 图片查看区域图片的jQuery对象
+         * @type {object}
+         */
         this.$viewerImage = null;
-
+        /**
+         * @alias Zoomer#$target
+         * @description 当前鼠标悬停的jQuery对象
+         * @type {object}
+         */
         this.$target = null;
-
+        /**
+         * @alias Zoomer#zoomRate
+         * @description 图片放大倍率
+         * @type {number}
+         */
         this.zoomRate = 0;
-
+        /**
+         * @alias Zoomer#options
+         * @description 控件配置参数，默认值为{@linkcode module:imageZoomer~defaults}
+         * @type {number}
+         */
         this.options = $.extend({}, defaults, options);
 
         this.init();
 
     };
-
+    /* Zoomer方法定义 */
     Zoomer.prototype = {
+        /**
+         * @description Zoomer构造方法
+         * @memberOf Zoomer
+         * @method constructor
+         * @instance
+         */
         constructor: Zoomer,
+        /**
+         * @description Zoomer初始化方法
+         * @memberOf Zoomer
+         * @instance
+         */
         init: function () {
             var _t = this,
                 img = new Image();
@@ -241,6 +288,12 @@
             _t.__proto__ = null;
 
         },
+        /**
+         * @description 创建zoomer元素方法
+         * @memberOf Zoomer
+         * @instance
+         * @return {object} zoomer元素jQuery对象
+         */
         createZoomer: function () {
             var _t = this,
                 zoomerId = _t.options.zoomerIdPrefix + _t.options._zoomerIndex,
@@ -286,7 +339,12 @@
 
             return $zoomer;
         },
-
+        /**
+         * @description 创建viewer元素方法
+         * @memberOf Zoomer
+         * @instance
+         * @return {object} viewer元素jQuery对象
+         */
         createViewer: function () {
             var _t = this,
                 viewerId = _t.options.viewerIdPrefix + _t.options._zoomerIndex,
@@ -308,7 +366,12 @@
 
             return $viewer;
         },
-
+        /**
+         * @description 截取图片区域方法
+         * @memberOf Zoomer
+         * @instance
+         * @param  {object} offset 截取部分的坐标
+         */
         captureImage: function (offset) {
             var _t = this;
 
@@ -317,7 +380,12 @@
                 'background-position-y': -offset.top * _t.zoomRate
             });
         },
-
+        /**
+         * @description viewer元素布局方法
+         * @memberOf Zoomer
+         * @instance
+         * @param  {string} layout 布局方式，具体参考{@linkcode module:imageZoomer~defaults}
+         */
         layoutViewer: function (layout) {
             var _t = this,
                 spacing = 20,
@@ -411,7 +479,12 @@
             _t.layoutCaret(bestDirection);
 
         },
-
+        /**
+         * @description 放置viewer边缘小箭头方法
+         * @memberOf Zoomer
+         * @instance
+         * @param  {string} bestDirection 放置方向
+         */
         layoutCaret: function (bestDirection) {
             var _t = this,
                 top = _t.$viewer.height() / 2,
@@ -431,7 +504,14 @@
             _t.$viewer.find('#caret').css($.extend(postionStyle, caretStyle.common, caretStyle[bestDirection]));
 
         },
-
+        /**
+         * @description 放置zoomer放大区块元素方法
+         * @memberOf Zoomer
+         * @instance
+         * @param  {object} $elem  鼠标悬停元素的jQuery对象
+         * @param  {object} offset 鼠标相对于悬停图片的位移
+         * @param  {object} rect   鼠标悬停图片的宽高
+         */
         layoutZoomer: function ($elem, offset, rect) {
             var _t = this,
                 width = $elem.width(),
@@ -446,6 +526,11 @@
         }
     };
 
+    if (typeof define === 'function' && define.amd) {
+        define('imageZoomer', [], function() {
+            return viewer;
+        });
+    }
 
     window.viewer = viewer;
 })(window, undefined);
